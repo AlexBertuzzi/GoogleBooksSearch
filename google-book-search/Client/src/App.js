@@ -18,7 +18,6 @@ function App() {
           <Route exact path="/saved">
             <Saved />
           </Route>
-
         </Switch>
       </div>
     </Router>

@@ -9,14 +9,13 @@ function Books() {
     const [book, setBook] = useState("");
     const [result, setResult] = useState([]);
 
-    function saveBook(book) {
+    function saveBook(title, authors, description, image, link) {
         API.saveBook({
-            id: book.id,
-            title: book.volumeInfo.title,
-            author: book.volumeInfo.authors,
-            description: book.volumeInfo.description,
-            image: book.volumeInfo.imageLinks.thumbnail,
-            link: book.volumeInfo.infoLink
+            title: title,
+            authors: authors,
+            description: description,
+            image: image,
+            link: link
         })        
     }
 
@@ -65,8 +64,10 @@ function Books() {
                                 </h2>
                                 <img src={book.volumeInfo.imageLinks.thumbnail} alt={book.volumeInfo.title} />
                                 <p>{book.volumeInfo.description}</p>
-                                <Save onClick={saveBook(book)} />
-                                <View href={book.volumeInfo.infoLink} />
+                                <Save onClick={() => saveBook(book.volumeInfo.title, book.volumeInfo.authors, book.volumeInfo.description, book.volumeInfo.imageLinks.thumbnail, book.volumeInfo.infoLink)} />
+                                <View>
+                                    <a href={book.volumeInfo.infoLink} style={ {color:"white"} }>View</a>
+                                </View> 
                             </ListItem>
                         </List>
                     )})) : (

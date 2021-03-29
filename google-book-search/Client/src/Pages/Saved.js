@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Delete from "../components/Delete"
 import View from "../components/View";
 import API from "../utils/API";
@@ -7,6 +7,10 @@ import { List, ListItem } from "../components/List";
 function SavedBooks() {
     const [saved, setSaved] = useState([])
 
+    useEffect(() => {
+        searchBooks()
+    }, []);
+
     function searchBooks() {
         API.getBooks()
             .then(res => {
@@ -14,7 +18,7 @@ function SavedBooks() {
                 console.log(res.data)
             })
     }
-    searchBooks();
+    
 
     function deleteBook(id) {
         API.deleteBook(id)
@@ -30,14 +34,16 @@ function SavedBooks() {
                 saved.map(book => {
                     return (
                         <List>
-                            <ListItem key={book.id}>
+                            <ListItem key={book._id}>
                                 <h2>
-                                    {book.volumeInfo.title} by {book.volumeInfo.authors}
+                                    {book.title} by {book.authors}
                                 </h2>
-                                <img src={book.volumeInfo.imageLinks.thumbnail} alt={book.volumeInfo.title} />
-                                <p>{book.volumeInfo.description}</p>        
-                                <Delete onClick={deleteBook(book.id)} />
-                                <View href={book.volumeInfo.infoLink} />
+                                <img src={book.image} alt={book.title} />
+                                <p>{book.description}</p>        
+                                <Delete onClick={() => deleteBook(book._id)} />
+                                <View>
+                                    <a href={book.link} style={ {color:"white"} }>View</a>
+                                </View>
                             </ListItem>
                         </List>
                     )})) : (
