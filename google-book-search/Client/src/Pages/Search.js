@@ -1,62 +1,78 @@
-import React, { useEffect, useState } from "react";
-import Jumbotron from "../components/Jumbotron";
+import React, { useState } from "react";
 import Save from "../components/Save";
 import View from "../components/View";
 import API from "../utils/API";
 import { List, ListItem } from "../components/List";
-import { Search, Input, FormBtn } from "../components/Search";
 
 function Books() {
     // Setting our component's initial state
-    const [books, setBooks] = useState([])
-    const [formObject, setFormObject] = useState({})
-  
-    // Load all books and store them with setBooks
-    useEffect(() => {
-      loadBooks()
-    }, [])
-  
-    // Loads all books and sets them to books
-    function loadBooks() {
-      API.getBooks()
-        .then(res => 
-          setBooks(res.data)
-        )
-        .catch(err => console.log(err));
-    };
-  
+    const [book, setBook] = useState("");
+    const [result, setResult] = useState([]);
+
+    function saveBook(book) {
+        API.saveBook({
+            id: book.id,
+            title: book.volumeInfo.title,
+            author: book.volumeInfo.authors,
+            description: book.volumeInfo.description,
+            image: book.volumeInfo.imageLinks.thumbnail,
+            link: book.volumeInfo.infoLink
+        })        
+    }
+
+    function handleFormSubmit(event) {
+        event.preventDefault();
+        API.googleBooks(book)
+        .then(data => {
+            console.log(data.data.items);
+            setResult(data.data.items);
+        })
+    }
+
+    function handleInputChange(event) {
+        const book = event.target.value;
+        setBook(book);
+    }  
   
       return (
         <div>
-            <Jumbotron />
-            <Search>
-                <form>
-                    <Input 
-                    onChange={() => {}}
+            <div>
+                <form onSubmit={handleFormSubmit} className="form-group" style={{margin: "5%"}}>
+                    <h3>Book Search</h3>
+                    <input 
+                    className="form-control"
+                    onChange={handleInputChange}
                     name="title"
-                    placeholder="Title (required)" />
-                    <FormBtn
-                    disabled={!(formObject.author && formObject.title)}
-                    onClick={() => {}}>
+                    placeholder="Title (required)">
+                    </input>
+                    <button
+                    style={{ float: "right", margin: 10 }}
+                    className="btn btn-success"
+                    type="submit" value="Search">
                         Search
-                    </FormBtn>
+                    </button>
                 </form>
-            </Search>
-            <List>
-                {books.map(book => {
-                        return (
-                        <ListItem key={book._id}>
-                            <a href={"/books/" + book._id}>
-                            <strong>
-                                {book.title} by {book.author}
-                            </strong>
-                            </a>
-                            <Save onClick={() =>{}} />
-                            <View onClick={() =>{}} />
-                        </ListItem>
-                        );
-                    })}
-            </List>
+            </div>
+            <div className="jumbotron">
+                {result.length ? (
+                    result.map(book => {
+                       
+                    return (
+                        <List>
+                            <ListItem key={book.id}>
+                                <h2>
+                                    {book.volumeInfo.title} by {book.volumeInfo.authors}
+                                </h2>
+                                <img src={book.volumeInfo.imageLinks.thumbnail} alt={book.volumeInfo.title} />
+                                <p>{book.volumeInfo.description}</p>
+                                <Save onClick={saveBook(book)} />
+                                <View href={book.volumeInfo.infoLink} />
+                            </ListItem>
+                        </List>
+                    )})) : (
+                        <h2> No Results to Display</h2>
+                )}
+            </div>
         </div>
       ); 
 }

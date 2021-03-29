@@ -1,8 +1,8 @@
 import axios from "axios";
-
+const apiKey= "AIzaSyCh9dLDGp7lmrqQKRLWPOMqFiVuGBD8sD0"
 export default {
-  googleBooks: function(query) {
-      return axios.get("https://www.googleapis.com/books/v1/volumes?q=" + query)
+  googleBooks: function(book) {
+      return axios.get("https://www.googleapis.com/books/v1/volumes?q=" + book + "&key=" + apiKey + "&maxResults=10")
   },
   // Gets all books
   getBooks: function() {
@@ -17,7 +17,7 @@ export default {
     return axios.delete("/api/books/" + id);
   },
   // Saves a book to the database
-  saveBook: function(bookData) {
-    return axios.post("/api/books", bookData);
+  saveBook: function(book) {
+    return axios.post("/api/books", book);
   }
 };
